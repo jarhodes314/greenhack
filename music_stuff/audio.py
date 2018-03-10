@@ -49,7 +49,7 @@ class AudioGenerator:
                              rate=self.fs,
                              output=True,
                              stream_callback=callback,
-                             frames_per_buffer=4096)
+                             frames_per_buffer=1024)
 
     def wait(self,period=0.1,cb=None):
         while self.stream.is_active():
