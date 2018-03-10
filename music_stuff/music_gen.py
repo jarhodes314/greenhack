@@ -39,10 +39,11 @@ def playNoteShort(note, octave):
 nt = 3
 def playNext(eltime):
     global nt
-    nt = nt + random.randint(-1, 1)
+    nt = nt + random.randint(-1, 1) * 2
     if nt < 0 or nt >= 7:
         nt = random.randint(0, 6)
-    if(MusicGen.happy == True):
+    if(MusicGen.happy is True):
+        generator.period = 1.0
         print("H")
         generator.period = 1
         playNoteLong("A", 0)
