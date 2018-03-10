@@ -68,6 +68,8 @@ class AudioGenerator:
 
     def generateDuration(self, duration, frames):
 
+        print(len(self.tunes))
+
         # add to the tunes the ones that will start playing during this time
         while len(self.tuneHeap) > 0 and self.tuneHeap[0].start < self.elapsedTime + duration:
             self.tunes.append(heapq.heappop(self.tuneHeap))
@@ -113,33 +115,26 @@ class AudioGenerator:
 
 p = pyaudio.PyAudio()
 
-
-def note(freq):
-    def notesound(t):
-        return math.sin(2 * math.pi * freq * t)
-
-    return np.vectorize(notesound)
-
 def ins1(x):
-    return 0.5 * (math.sin(x) + math.sin(2 * x) + math.cos(math.sin(3 * x)) - 0.225)
+    return 0.5 * (np.sin(x) + np.sin(2 * x) + np.cos(np.sin(3 * x)) - 0.225)
 
 def ins2(x):
-    return 0.5 * (math.sin(x) + (1/2) * math.sin(2 * x) + (1/3) * math.sin(3 * x))
+    return 0.5 * (np.sin(x) + (1/2) * np.sin(2 * x) + (1/3) * np.sin(3 * x))
 
 def ins3(x):
-    return math.sin(math.cos(x)) + math.cos(math.sin(x)) - 1
+    return np.sin(np.cos(x)) + np.cos(np.sin(x)) - 1
 
 def ins4(x):
-    return 0.25 * (math.sin(x) + math.cos(2 * x) + math.sin(3 * x) + math.cos(4 * x) + math.sin(5 * x) + math.cos(6 * x) - 0.5)
+    return 0.25 * (np.sin(x) + np.cos(2 * x) + np.sin(3 * x) + np.cos(4 * x) + np.sin(5 * x) + np.cos(6 * x) - 0.5)
 
 def ins5(x):
-    return (1/1.8) * math.tan(math.sin(x))
+    return (1/1.8) * np.tan(np.sin(x))
 
 def ins6(x):
-    return (1/1.5) * (math.sin(x) + 0.5 * math.sin(10 * x))
+    return (1/1.5) * (np.sin(x) + 0.5 * np.sin(10 * x))
 
 def notefade(freq, p):
-    ran = random.randint(0,3)
+    ran = random.randint(0,5)
 
     if ran == 0:
         ins = ins1
@@ -147,17 +142,19 @@ def notefade(freq, p):
         ins = ins2
     elif ran == 2:
         ins = ins3
-    else:
+    elif ran == 3:
         ins = ins4
+    elif ran == 4:
+        ins = ins5
+    else:
+        ins = ins6
 
-    ins = ins6
+    def vecsound(t):
+        x = 2 * np.pi * freq * t
+        
+        return ins(x) * np.exp(-p * t)
 
-    def notesound(t):
-        x = 2 * math.pi * freq * t
-
-        return ins6(x) * math.exp(-p * t)
-
-    return np.vectorize(notesound)
+    return vecsound
 
 class Notes:
     nf = {

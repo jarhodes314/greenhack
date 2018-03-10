@@ -42,7 +42,6 @@ def cb(start):
     else:
         note -= 1
 
-
     generator.addTune(Tune(notefade(freq, decay), start + forward, length))
 
-generator.wait(0.5, cb)
+generator.wait(0.3, cb)
