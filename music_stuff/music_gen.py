@@ -30,24 +30,28 @@ class MusicGen:
         6:"G#"
     }
 
-def playNote(note, octave):
+def playNoteLong(note, octave):
     generator.addTune(Tune(notefade(Notes.freq(note, octave), 2), generator.elapsedTime, 2))
+
+def playNoteShort(note, octave):
+    generator.addTune(Tune(notefade(Notes.freq(note, octave), 10), generator.elapsedTime, 2))
 
 nt = 3
 def playNext(eltime):
-    playNote("A", 0)
     global nt
     nt = nt + random.randint(-1, 1)
     if nt < 0 or nt >= 7:
         nt = random.randint(0, 6)
     if(MusicGen.happy == True):
         print("H")
-        playNote("C#", 0)
-        playNote(MusicGen.majorMapping[nt], 0)
+        playNoteLong("A", 0)
+        playNoteLong(MusicGen.majorMapping[nt], 0)
     else:
+        generator.period = 0.5
         print("S")
-        playNote("C", 0)
-        playNote(MusicGen.minorMapping[nt], 0)
+        playNoteShort("A", 0)
+        playNoteShort(MusicGen.minorMapping[nt], 0)
+
     
         
 
