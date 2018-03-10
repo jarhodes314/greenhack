@@ -5,6 +5,7 @@ import time
 import heapq
 import random
 
+
 class Tune:
 
     def __init__(self, fun, start, duration):
@@ -18,17 +19,45 @@ class Tune:
     def __eq__(self, other):
         return self.start == other.start
 
+
 # a tune is a function, an elapsed time and a remaining length (before it is removed)
 
-class AudioGenerator:
+def callback(in_data, frame_count, time_info, status):
+    data = generator.volume * generator.generateDuration(frame_count / generator.fs, frame_count)
 
+    if generator.exit:
+        outputStatus = pyaudio.paAbort
+    else:
+        outputStatus = pyaudio.paContinue
+
+    return (data, outputStatus)
+
+
+class AudioGenerator:
     tunes = []
     tuneHeap = []
     elapsedTime = 0.0
     lastVolume = 1.0
+    volume = 0.2
+    fs = 44100
+    stream = None
+    exit = False
 
-    # def __init__(self):
-        # do init stuff
+    def start(self):
+        self.stream = p.open(format=pyaudio.paFloat32,
+                             channels=1,
+                             rate=self.fs,
+                             output=True,
+                             stream_callback=callback)
+
+    def wait(self):
+        while self.stream.is_active():
+            time.sleep(0.1)
+
+        self.stream.stop_stream()
+        self.stream.close()
+
+        p.terminate()
 
     def addTune(self, tune):
         heapq.heappush(self.tuneHeap, tune)
@@ -39,7 +68,7 @@ class AudioGenerator:
         while len(self.tuneHeap) > 0 and self.tuneHeap[0].start < self.elapsedTime + duration:
             self.tunes.append(heapq.heappop(self.tuneHeap))
 
-        timesteps = self.elapsedTime + (np.arange(frames) * (1 / fs))
+        timesteps = self.elapsedTime + (np.arange(frames) * (1 / self.fs))
         samples = np.zeros(frames)
 
         newTunes = []
@@ -65,10 +94,9 @@ class AudioGenerator:
 
         if sumVolume < 1.0:
             sumVolume = 1.0
-        #print("ln 68: "+str(sumVolume))
-        #print("ln 69: "+str(self.lastVolume))
-        #print("ln 70: "+str(frames))
-        samples *= (np.arange(0.0, 1.0, 1.0 / frames) * (1.0 / sumVolume) + (1.0 - np.arange(0.0, 1.0, 1.0 / frames)) * (1.0 / self.lastVolume))
+
+        samples *= (np.arange(0.0, 1.0, 1.0 / frames) * (1.0 / sumVolume) + (
+                    1.0 - np.arange(0.0, 1.0, 1.0 / frames)) * (1.0 / self.lastVolume))
 
         self.lastVolume = sumVolume
 
@@ -81,50 +109,45 @@ class AudioGenerator:
 
 p = pyaudio.PyAudio()
 
-volume = 0.2
-fs = 44100
-f = 440.0
-
-def sound(t):
-    n = math.sin(2*math.pi*math.pow(f*t, 1.0 + 0.5 * math.cos(math.pow(t, 0.9))))
-
-    return n
 
 def note(freq):
     def notesound(t):
-        return math.sin(2*math.pi*freq*t)
+        return math.sin(2 * math.pi * freq * t)
+
     return np.vectorize(notesound)
+
 
 def notefade(freq, p):
     def notesound(t):
-        return math.sin(2*math.pi*freq*t) * math.exp(-p * t)
+        return math.sin(2 * math.pi * freq * t) * math.exp(-p * t)
+
     return np.vectorize(notesound)
 
+class Notes:
+    nf = {
+        "A_": 0,
+        "A": 1,
+        "A#": 2,
+        "B_": 2,
+        "B": 3,
+        "C": 4,
+        "C#": 5,
+        "D_": 5,
+        "D": 6,
+        "D#": 7,
+        "E_": 7,
+        "E": 8,
+        "F": 9,
+        "F#": 10,
+        "G_": 10,
+        "G": 11,
+        "G#": 12
+    }
 
-nf = {
-    "A_": 0,
-    "A": 1,
-    "A#": 2,
-    "B_": 2,
-    "B": 3,
-    "C": 4,
-    "C#": 5,
-    "D_": 5,
-    "D": 6,
-    "D#": 7,
-    "E_": 7,
-    "E": 8,
-    "F": 9,
-    "F#": 10,
-    "G_": 10,
-    "G": 11,
-    "G#": 12
-}
+    @staticmethod
+    def freq(key, octave=0):
+        return pow(2, (Notes.nf[key] - 1 + 12 * octave) / 12) * 440
 
-def fkey(key):
-    return pow(2, (key - 1) / 12) * 440
-
-vecsound = np.vectorize(sound)
 
 generator = AudioGenerator()
 
@@ -137,32 +160,15 @@ generator = AudioGenerator()
 # generator.addTune(Tune(notefade(440, 1.2), 0, 10))
 # generator.addTune(Tune(notefade(560, 1.2), 3, 10))
 
-generator.addTune(Tune(notefade(fkey(nf["C"]), 20), 0, 2))
-generator.addTune(Tune(notefade(fkey(nf["C"]), 20), 0.3, 2))
-generator.addTune(Tune(notefade(fkey(nf["C"]), 20), 0.6, 2))
+generator.addTune(Tune(notefade(Notes.freq("C"), 20), 0, 2))
+generator.addTune(Tune(notefade(Notes.freq("C"), 20), 0.3, 2))
+generator.addTune(Tune(notefade(Notes.freq("C"), 20), 0.6, 2))
 
-generator.addTune(Tune(notefade(fkey(nf["A"]), 20), 1.2, 2))
-generator.addTune(Tune(notefade(fkey(nf["C"]), 20), 1.8, 2))
-generator.addTune(Tune(notefade(fkey(nf["F"]), 20), 2.4, 2))
+generator.addTune(Tune(notefade(Notes.freq("A"), 20), 1.2, 2))
+generator.addTune(Tune(notefade(Notes.freq("C"), 20), 1.8, 2))
+generator.addTune(Tune(notefade(Notes.freq("F"), 20), 2.4, 2))
 
-generator.addTune(Tune(notefade(fkey(nf["F"] - 12), 2), 3.0, 1.2))
+generator.addTune(Tune(notefade(Notes.freq("F", -1), 2), 3.0, 1.2))
 
-def callback(in_data, frame_count, time_info, status):
-    data = volume * generator.generateDuration(frame_count/fs, frame_count)
-    return (data, pyaudio.paContinue)
-
-
-stream = p.open(format=pyaudio.paFloat32,
-                channels=1,
-                rate=fs,
-                output=True,
-                stream_callback=callback)
-
-
-while stream.is_active():
-    time.sleep(0.1)
-
-stream.stop_stream()
-stream.close()
-
-p.terminate()
+generator.start()
+generator.wait()
