@@ -22,12 +22,27 @@ generator.addTune(Tune(notefade(Notes.freq("F", -1), 2), 3.0, 1.2))
 
 generator.start()
 
+note = 0
+direction = 0
+
 def cb(start):
-    forward = random.random() * 2.0 + 1.0
+    global direction
+    global note
+
+    forward = 0
     length = 5
-    decay = random.random() + 1.0
-    freq = Notes.numfreq(random.randint(-30, 30))
+    decay = 1.5 + random.randint(0,1)
+    freq = Notes.numfreq(note)
+
+    if random.random() < 0.3:
+        direction = 1 - direction
+
+    if direction == 0:
+        note += 1
+    else:
+        note -= 1
+
 
     generator.addTune(Tune(notefade(freq, decay), start + forward, length))
 
-generator.wait(0.3, cb)
+generator.wait(0.5, cb)
