@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [u'greenhack.pythonanywhere.com']
 # Application definition
 
 INSTALLED_APPS = [
+    'greenhack_backend',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

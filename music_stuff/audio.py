@@ -33,6 +33,9 @@ def callback(in_data, frame_count, time_info, status):
     return (data, outputStatus)
 
 
+def fade(x):
+    return 0.5 + 0.5 * np.tanh(4000 * (x - 0.001))
+
 class AudioGenerator:
     tunes = []
     tuneHeap = []
@@ -42,6 +45,7 @@ class AudioGenerator:
     fs = 44100
     stream = None
     exit = False
+    period = 0.1
 
     def start(self):
         self.stream = p.open(format=pyaudio.paFloat32,
@@ -52,8 +56,10 @@ class AudioGenerator:
                              frames_per_buffer=1024)
 
     def wait(self,period=0.1,cb=None):
+        self.period = period
+
         while self.stream.is_active():
-            time.sleep(period)
+            time.sleep(self.period)
 
             if cb is not None:
                 cb(generator.elapsedTime)
@@ -85,8 +91,11 @@ class AudioGenerator:
             section = np.zeros(frames)
             section[np.logical_and(tune.start <= timesteps, timesteps < tune.start + tune.duration)] = 1.0
 
+            # fadeSection = fade(timesteps - tune.start) * fade(tune.start + tune.duration - timesteps) * section
+            fadeSection = section
+
             changedTimes = (timesteps - tune.start) * section
-            tuneSample = tune.fun(changedTimes) * section
+            tuneSample = tune.fun(changedTimes) * fadeSection
 
             amp = np.amax(tuneSample)
             sumVolume += amp
