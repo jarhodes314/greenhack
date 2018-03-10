@@ -63,11 +63,12 @@ class AudioGenerator:
 
         self.tunes = newTunes
 
-        if sumVolume < 1:
+        if sumVolume < 1.0:
             sumVolume = 1.0
-
-
-        samples *= (np.arange(0, 1, 1 / frames) * (1 / sumVolume) + (1 - np.arange(0, 1, 1 / frames)) * (1 / self.lastVolume))
+        #print("ln 68: "+str(sumVolume))
+        #print("ln 69: "+str(self.lastVolume))
+        #print("ln 70: "+str(frames))
+        samples *= (np.arange(0.0, 1.0, 1.0 / frames) * (1.0 / sumVolume) + (1.0 - np.arange(0.0, 1.0, 1.0 / frames)) * (1.0 / self.lastVolume))
 
         self.lastVolume = sumVolume
 
