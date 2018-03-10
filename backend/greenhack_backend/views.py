@@ -9,7 +9,7 @@ import datetime
 
 # Create your views here.
 def add_sensor_data(request):
-    data = request.body
+    data = json.loads(request.body.decode('utf-8'))
     p = data["potentiometer"]
     t = data["temperature"]
     h = data["humidity"]
