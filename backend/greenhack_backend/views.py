@@ -2,34 +2,32 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core import serializers
 import json
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 from greenhack_backend.models import *
 
 import datetime
 
 # Create your views here.
+@csrf_exempt
 def send_data(request):
+    print(request.POST["potentiometer"])
     print('aa')
-    data = json.loads(request.body.decode('utf-8'))
-    p = data["potentiometer"]
-    t = data["temperature"]
-    h = data["humidity"]
+    p = request.POST["potentiometer"]
+    t = request.POST["temperature"]
+    h = request.POST["humidity"]
     print(p,t,h)
     date = datetime.datetime.now()
 
-    temp = Temperature()
-    temp.date = date
-    temp.reading = t
+    print(date)
+    temp = Temperature(datetime = timezone.now(), reading = t)
     temp.save()
 
-    hum = Humidity()
-    hum.date = date
-    hum.reading = h
+    hum = Humidity(datetime = timezone.now(), reading = h)
     hum.save()
 
-    pot = Pressure()
-    pot.date = date
-    pot.reading = p
+    pot = Pressure(datetime = timezone.now(), reading = p)
     pot.save()
     
     return HttpResponse(status=200)
