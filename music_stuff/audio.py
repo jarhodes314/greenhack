@@ -132,6 +132,12 @@ def ins3(x):
 def ins4(x):
     return 0.25 * (math.sin(x) + math.cos(2 * x) + math.sin(3 * x) + math.cos(4 * x) + math.sin(5 * x) + math.cos(6 * x) - 0.5)
 
+def ins5(x):
+    return (1/1.8) * math.tan(math.sin(x))
+
+def ins6(x):
+    return (1/1.5) * (math.sin(x) + 0.5 * math.sin(10 * x))
+
 def notefade(freq, p):
     ran = random.randint(0,3)
 
@@ -144,10 +150,12 @@ def notefade(freq, p):
     else:
         ins = ins4
 
+    ins = ins6
+
     def notesound(t):
         x = 2 * math.pi * freq * t
 
-        return ins(x) * math.exp(-p * t)
+        return ins6(x) * math.exp(-p * t)
 
     return np.vectorize(notesound)
 
