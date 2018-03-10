@@ -48,11 +48,15 @@ class AudioGenerator:
                              channels=1,
                              rate=self.fs,
                              output=True,
-                             stream_callback=callback)
+                             stream_callback=callback,
+                             frames_per_buffer=4096)
 
-    def wait(self):
+    def wait(self,period=0.1,cb=None):
         while self.stream.is_active():
-            time.sleep(0.1)
+            time.sleep(period)
+
+            if cb is not None:
+                cb(generator.elapsedTime)
 
         self.stream.stop_stream()
         self.stream.close()
@@ -116,10 +120,34 @@ def note(freq):
 
     return np.vectorize(notesound)
 
+def ins1(x):
+    return 0.5 * (math.sin(x) + math.sin(2 * x) + math.cos(math.sin(3 * x)) - 0.225)
+
+def ins2(x):
+    return 0.5 * (math.sin(x) + (1/2) * math.sin(2 * x) + (1/3) * math.sin(3 * x))
+
+def ins3(x):
+    return math.sin(math.cos(x)) + math.cos(math.sin(x)) - 1
+
+def ins4(x):
+    return 0.25 * (math.sin(x) + math.cos(2 * x) + math.sin(3 * x) + math.cos(4 * x) + math.sin(5 * x) + math.cos(6 * x) - 0.5)
 
 def notefade(freq, p):
+    ran = random.randint(0,3)
+
+    if ran == 0:
+        ins = ins1
+    elif ran == 1:
+        ins = ins2
+    elif ran == 2:
+        ins = ins3
+    else:
+        ins = ins4
+
     def notesound(t):
-        return math.sin(2 * math.pi * freq * t) * math.exp(-p * t)
+        x = 2 * math.pi * freq * t
+
+        return ins(x) * math.exp(-p * t)
 
     return np.vectorize(notesound)
 
@@ -145,30 +173,14 @@ class Notes:
     }
 
     @staticmethod
+    def numfreq(num):
+        return pow(2, (num - 1) / 12) * 440
+
+    @staticmethod
     def freq(key, octave=0):
         return pow(2, (Notes.nf[key] - 1 + 12 * octave) / 12) * 440
 
 
 generator = AudioGenerator()
 
-# generator.addTune(Tune(notefade(440, 1.2), 0, 10))
-#
-# generator.addTune(Tune(notefade(440, 1.2), 0, 10))
-# generator.addTune(Tune(notefade(440, 1.2), 0, 10))
-# generator.addTune(Tune(notefade(442, 1.2), 0, 10))
-# generator.addTune(Tune(notefade(442, 1.2), 0, 10))
-# generator.addTune(Tune(notefade(440, 1.2), 0, 10))
-# generator.addTune(Tune(notefade(560, 1.2), 3, 10))
 
-generator.addTune(Tune(notefade(Notes.freq("C"), 20), 0, 2))
-generator.addTune(Tune(notefade(Notes.freq("C"), 20), 0.3, 2))
-generator.addTune(Tune(notefade(Notes.freq("C"), 20), 0.6, 2))
-
-generator.addTune(Tune(notefade(Notes.freq("A"), 20), 1.2, 2))
-generator.addTune(Tune(notefade(Notes.freq("C"), 20), 1.8, 2))
-generator.addTune(Tune(notefade(Notes.freq("F"), 20), 2.4, 2))
-
-generator.addTune(Tune(notefade(Notes.freq("F", -1), 2), 3.0, 1.2))
-
-generator.start()
-generator.wait()
