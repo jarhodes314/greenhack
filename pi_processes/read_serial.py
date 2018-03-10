@@ -64,7 +64,7 @@ def ser_read():
             if ln != '':
                 print(ln)
                 data = json.loads(ln)
-                r = requests.post(URL, data)
+                r = requests.post(URL, data=data)
                 if(data["potentiometer"]>800 or data["temperature"]>26):
                     ser.write(bytes("1", "UTF-8"))
                     MusicGen.happy = False

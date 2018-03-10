@@ -19,6 +19,6 @@ from greenhack_backend import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url('send_data', views.add_sensor_data),
+    url('send_data', views.send_data),
     url('', views.main)
 ]

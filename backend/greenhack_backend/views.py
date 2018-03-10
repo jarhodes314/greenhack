@@ -8,11 +8,13 @@ from greenhack_backend.models import *
 import datetime
 
 # Create your views here.
-def add_sensor_data(request):
+def send_data(request):
+    print('aa')
     data = json.loads(request.body.decode('utf-8'))
     p = data["potentiometer"]
     t = data["temperature"]
     h = data["humidity"]
+    print(p,t,h)
     date = datetime.datetime.now()
 
     temp = Temperature()
