@@ -18,4 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    path('send_data', views.add_sensor_data)
+    path('',views.main)
 ]

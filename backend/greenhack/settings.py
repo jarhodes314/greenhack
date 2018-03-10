@@ -68,6 +68,9 @@ TEMPLATES = [
     },
 ]
 
+ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
+
+
 WSGI_APPLICATION = 'greenhack.wsgi.application'
 
 
