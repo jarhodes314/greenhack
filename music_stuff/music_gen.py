@@ -31,10 +31,10 @@ class MusicGen:
     }
 
 def playNoteLong(note, octave):
-    generator.addTune(Tune(notefade(Notes.freq(note, octave), 2), generator.elapsedTime, 2))
+    generator.addTune(Tune(notefade(Notes.freq(note, octave), 2, volume=0.5), generator.elapsedTime, 2))
 
 def playNoteShort(note, octave):
-    generator.addTune(Tune(notefade(Notes.freq(note, octave), 10), generator.elapsedTime, 2))
+    generator.addTune(Tune(notefade(Notes.freq(note, octave), 10, volume=1.0), generator.elapsedTime, 2))
 
 nt = 3
 def playNext(eltime):
@@ -44,10 +44,11 @@ def playNext(eltime):
         nt = random.randint(0, 6)
     if(MusicGen.happy == True):
         print("H")
+        generator.period = 1
         playNoteLong("A", 0)
         playNoteLong(MusicGen.majorMapping[nt], 0)
     else:
-        generator.period = 0.5
+        generator.period = 0.25
         print("S")
         playNoteShort("A", 0)
         playNoteShort(MusicGen.minorMapping[nt], 0)
