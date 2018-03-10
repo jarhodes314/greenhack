@@ -43,21 +43,17 @@ void setup() {
 }
 
 void loop() {
+  
   t = false;
+
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
 
-  JsonObject& sensor1 = root.createNestedObject("1");
-  sensor1["sensor"] = "potentiometer";
-  sensor1["data"] = analogRead(thermo_pos);
+  root["potentiometer"] = analogRead(thermo_pos);
 
-  JsonObject& sensor2 = root.createNestedObject("2");
-  sensor2["sensor"] = "temperature";
-  sensor2["data"] = bme.readTemperature();
+  root["temperature"] = bme.readTemperature();
 
-  JsonObject& sensor3 = root.createNestedObject("3");
-  sensor3["sensor"] = "humidity";
-  sensor3["data"] = bme.readHumidity();
+  root["humidity"] = bme.readHumidity();
 
   
   if (Serial.available()){

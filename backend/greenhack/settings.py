@@ -55,7 +55,7 @@ ROOT_URLCONF = 'greenhack.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,"templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,6 +67,9 @@ TEMPLATES = [
         },
     },
 ]
+
+ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
+
 
 WSGI_APPLICATION = 'greenhack.wsgi.application'
 
