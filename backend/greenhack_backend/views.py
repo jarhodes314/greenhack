@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from greenhack_backend.models import *
 
 import datetime
 
@@ -28,5 +29,9 @@ def add_sensor_data(request):
     
     return HttpResponse(status=200)
 
-def main():
-    pass
+def main(request):
+    results1 = Temperature.objects.all()
+    results2 = Pressure.objects.all()
+    results3 = Humidity.objects.all()
+
+    return render(request, 'main.html', {"results1": results1,"results2":results2, "results3":results3})

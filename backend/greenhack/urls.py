@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from greenhack_backend import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    path('send_data', views.add_sensor_data)
-    path('',views.main)
+    url('send_data', views.add_sensor_data),
+    url('', views.main)
 ]
