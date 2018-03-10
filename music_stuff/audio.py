@@ -150,7 +150,7 @@ class Notes:
 
 
 generator = AudioGenerator()
-
+"""
 # generator.addTune(Tune(notefade(440, 1.2), 0, 10))
 #
 # generator.addTune(Tune(notefade(440, 1.2), 0, 10))
@@ -171,4 +171,4 @@ generator.addTune(Tune(notefade(Notes.freq("F"), 20), 2.4, 2))
 generator.addTune(Tune(notefade(Notes.freq("F", -1), 2), 3.0, 1.2))
 
 generator.start()
-generator.wait()
+generator.wait()"""
