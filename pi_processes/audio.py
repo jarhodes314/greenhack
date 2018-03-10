@@ -34,7 +34,7 @@ def callback(in_data, frame_count, time_info, status):
 
 
 def fade(x):
-    return 0.5 + 0.5 * np.tanh(4000 * (x - 0.001))
+    return 0.5 + 0.5 * np.tanh(400 * (x - 0.001))
 
 class AudioGenerator:
     tunes = []

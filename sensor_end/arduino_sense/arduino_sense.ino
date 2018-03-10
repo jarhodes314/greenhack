@@ -1,10 +1,11 @@
-#include <StaticThreadController.h>
-#include <Thread.h>
-#include <ThreadController.h>
+
+//#include <StaticThreadController.h>
+//#include <Thread.h>
+//#include <ThreadController.h>
 #include <ArduinoJson.h>
 #include <Adafruit_BME280.h>
 #include <Servo.h>
-#include <pt.h>  
+//#include <pt.h>  
 
 
 const int thermo_pos = A0;
@@ -21,29 +22,26 @@ boolean t;
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-static struct pt pt1, pt2;
 int i = 0;
 Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); // software SPI
 int pos = 0;
 
-Thread buzzerThread = Thread();
-Thread servoThread = Thread();
 
 
 void setup() {
   pinMode(thermo_pos, INPUT);
   pinMode(buzzer, OUTPUT);
 
-  PT_INIT(&pt1);
-  PT_INIT(&pt2);
   
   servo.attach(11);
   
   Serial.begin(9600);
+
+  bme.begin();
 }
 
 void loop() {
-  
+
   t = false;
 
   StaticJsonBuffer<200> jsonBuffer;
@@ -114,66 +112,7 @@ void sweep_servo(){
 }
 
 
-static int tbuzzer_melody(struct pt *pt){
-  static unsigned long timestamp = 0;
-    PT_BEGIN(pt);
-    while(Serial.available()){
-      if (Serial.available()){
-      tone(buzzer,440);
-      t = true;
-      tone(buzzer,261);    
-      // Waits some time to turn off
-      timestamp = millis();
-      PT_WAIT_UNTIL(pt, millis() - timestamp > 200|| Serial.available());
-      //Turns the buzzer off
-      noTone(buzzer); 
-      // Sounds the buzzer at the frequency relative to the note D in Hz   
-      tone(buzzer,293);             
-      timestamp = millis();
-      PT_WAIT_UNTIL(pt, millis() - timestamp > 200 || Serial.available());   
-      noTone(buzzer); 
-       // Sounds the buzzer at the frequency relative to the note E in Hz
-      tone(buzzer,329);      
-      timestamp = millis();
-      PT_WAIT_UNTIL(pt, millis() - timestamp > 200|| Serial.available());    
-      noTone(buzzer);     
-      // Sounds the buzzer at the frequency relative to the note F in Hz
-      tone(buzzer,349);    
-      timestamp = millis();
-      PT_WAIT_UNTIL(pt, millis() - timestamp > 200|| Serial.available());    
-      noTone(buzzer); 
-      // Sounds the buzzer at the frequency relative to the note G in Hz
-      tone(buzzer,392);            
-      timestamp = millis();
-      PT_WAIT_UNTIL(pt, millis() - timestamp > 200|| Serial.available());
-      noTone(buzzer);
-      
-    }
-    }
-    PT_END(pt); 
- }
 
-static int tsweep_servo(struct pt *pt){
-  static unsigned long timestamp = 0;
-  PT_BEGIN(pt)
-  while(Serial.available()){
-    if (Serial.available()){
-    for (pos = 0; pos < 180; pos += 30) { 
-      servo.write(pos);   
-      timestamp = millis();
-      //delay(15);                       
-      PT_WAIT_UNTIL(pt,millis() - timestamp>40|| Serial.available());
-      }
-    for (pos = 180; pos > 0; pos -= 30) { 
-      servo.write(pos);
-      timestamp = millis();
-      //delay(15);
-      PT_WAIT_UNTIL(pt,millis() - timestamp>40|| Serial.available());
-    }
-  }
-  }
-  PT_END(pt);
-}
 
 void both_things(){
   int pos = servo.read();
@@ -186,7 +125,7 @@ void both_things(){
       } else {
         servo.write(0);
       }
-      }
+    }
 /*    if (x % 15 == 0){
       i = x/15;
       if (i/180 % 2 ==0){
