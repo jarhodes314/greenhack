@@ -76,7 +76,7 @@ class AudioGenerator:
 
     def generateDuration(self, duration, frames):
 
-        print(len(self.tunes))
+        #print(len(self.tunes))
 
         # add to the tunes the ones that will start playing during this time
         while len(self.tuneHeap) > 0 and self.tuneHeap[0].start < self.elapsedTime + duration:
