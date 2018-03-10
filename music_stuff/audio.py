@@ -34,7 +34,7 @@ def callback(in_data, frame_count, time_info, status):
 
 
 def fade(x):
-    return 0.5 + 0.5 * np.tanh(4000 * (x - 0.001))
+    return 0.5 + 0.5 * np.tanh(400 * (x - 0.001))
 
 class AudioGenerator:
     tunes = []
@@ -42,7 +42,7 @@ class AudioGenerator:
     elapsedTime = 0.0
     lastVolume = 1.0
     volume = 0.2
-    fs = 44100
+    fs = 8000
     stream = None
     exit = False
     period = 0.1
@@ -64,6 +64,8 @@ class AudioGenerator:
             if cb is not None:
                 cb(generator.elapsedTime)
 
+
+        print("The stream stops")
         self.stream.stop_stream()
         self.stream.close()
 
@@ -142,7 +144,7 @@ def ins5(x):
 def ins6(x):
     return (1/1.5) * (np.sin(x) + 0.5 * np.sin(10 * x))
 
-def notefade(freq, p):
+def notefade(freq, p=2, volume=1.0):
     ran = random.randint(0,5)
 
     if ran == 0:
@@ -161,7 +163,7 @@ def notefade(freq, p):
     def vecsound(t):
         x = 2 * np.pi * freq * t
         
-        return ins(x) * np.exp(-p * t)
+        return volume * ins(x) * np.exp(-p * t)
 
     return vecsound
 
