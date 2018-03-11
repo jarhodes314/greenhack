@@ -41,13 +41,13 @@ def playNext(eltime):
     if nt < 0 or nt >= 7:
         nt = random.randint(0, 6)
     if(MusicGen.happy == True):
-        print("H")
+        #print("H")
         generator.period = 1
         playNoteLong("A", 0)
         playNoteLong(MusicGen.majorMapping[nt], 0)
     else:
         generator.period = 0.25
-        print("S")
+        #print("S")
         playNoteShort("A", 0)
         playNoteShort(MusicGen.minorMapping[nt], 0)
 
@@ -55,6 +55,8 @@ def playNext(eltime):
 def ser_read():
     port = '/dev/ttyACM0'
     URL = 'https://greenhack.pythonanywhere.com/send_data'
+
+    #f = open("JSONlog.txt", "a")
 
     ser = serial.Serial(port)
     with serial.Serial(port,9600,timeout = 1) as ser:
@@ -64,6 +66,7 @@ def ser_read():
             #print(ser.readline())
             if ln != '':
                 print(ln)
+                #f.write(ln)
                 data = json.loads(ln)
                 r = requests.post(URL, data)
                 if(data["potentiometer"]>800 or data["temperature"]>26):
@@ -71,6 +74,8 @@ def ser_read():
                     MusicGen.happy = False
                 else:
                     MusicGen.happy = True
+
+    #f.close()
 
 
 
