@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Greenhack!</title>
+    
 </head>
 <body>
-    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+        <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+          
+    <div id="myDiv"></div>
+
     <table>
         <tr>
             <th>Date</th>
@@ -16,7 +26,7 @@
 
         {% for item in results1 %}
         <tr> 
-            <td>{{ item.date }}</td>
+            <td>{{ item.datetime }}</td>
             <td>{{ item.reading }}</td>
         </tr>
         {% endfor %}
@@ -47,7 +57,29 @@
         </tr>
         {% endfor %}
     </table>
-    
+
+    <script>
+        var data1 = {{ r1|safe }}
+        var data2 = {{ r2|safe }}
+        var data3 = {{ r3|safe }}
+ 
+        xs = []
+        for (x=0;x<Math.max(data1.length,data2.length,data3.length);x++){
+            xs.push(x)
+        }
+
+        var trace = {x:xs,y:data1,type:'scatter'};
+        var trace = {x:xs,y:data2,type:'scatter'};
+        var trace = {x:xs,y:data3,type:'scatter'};
+        
+        var data = [trace];
+
+        Plotly.newPlot('myDiv', data);
+
+    </script>
+
+
 
 </body>
+
 </html>

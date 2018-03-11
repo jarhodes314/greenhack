@@ -1,7 +1,6 @@
 import serial
 import json
 import requests
-
 from audio import *
 import time, random, _thread
 
@@ -68,7 +67,7 @@ def ser_read():
                 print(ln)
                 #f.write(ln)
                 data = json.loads(ln)
-                r = requests.post(URL, data)
+                r = requests.post(URL, data=data)
                 if(data["potentiometer"]>800 or data["temperature"]>26):
                     ser.write(bytes("1", "UTF-8"))
                     MusicGen.happy = False
@@ -76,10 +75,6 @@ def ser_read():
                     MusicGen.happy = True
 
     #f.close()
-
-
-
-
 
 
 _thread.start_new_thread(ser_read, ())
