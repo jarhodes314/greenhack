@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Greenhack!</title>
-    
+
 </head>
 <body>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
@@ -15,17 +15,17 @@
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
-          
+
     <div id="myDiv"></div>
 
-    <table>
+    <!--table>
         <tr>
             <th>Date</th>
             <th>Reading</th>
         </tr>
 
         {% for item in results1 %}
-        <tr> 
+        <tr>
             <td>{{ item.datetime }}</td>
             <td>{{ item.reading }}</td>
         </tr>
@@ -38,7 +38,7 @@
         </tr>
 
         {% for item in results2 %}
-        <tr> 
+        <tr>
             <td>{{ item.date }}</td>
             <td>{{ item.reading }}</td>
         </tr>
@@ -51,30 +51,56 @@
         </tr>
 
         {% for item in results3 %}
-        <tr> 
+        <tr>
             <td>{{ item.date }}</td>
             <td>{{ item.reading }}</td>
         </tr>
         {% endfor %}
-    </table>
+    </table-->
 
     <script>
         var data1 = {{ r1|safe }}
         var data2 = {{ r2|safe }}
         var data3 = {{ r3|safe }}
- 
+        var x1 = {{ d1|safe }}
+        var x2 = {{ d2|safe }}
+        var x3 = {{ d3|safe }}
+
         xs = []
         for (x=0;x<Math.max(data1.length,data2.length,data3.length);x++){
             xs.push(x)
         }
 
-        var trace = {x:xs,y:data1,type:'scatter'};
-        var trace = {x:xs,y:data2,type:'scatter'};
-        var trace = {x:xs,y:data3,type:'scatter'};
-        
-        var data = [trace];
+        var trace = {x:x1,y:data1,type:'scatter',name:'Temperature'};
+        var trace2 = {x:x2,y:data2,type:'scatter',yaxis:'y2',name:'Potentiometer'};
+        var trace3 = {x:x3,y:data3,type:'scatter',name:'Humidity'};
 
-        Plotly.newPlot('myDiv', data);
+        var layout = {
+            title: 'Dave\'s room',
+            height: window.innerHeight,
+            xaxis: {
+                showgrid:false
+            },
+            yaxis: {
+                title: 'Temp/Humidity',
+                range: [0,100],
+                titlefont: {color: 'rgb(148, 103, 189)'},
+                tickfont: {color: 'rgb(148, 103, 189)'},
+                showgrid: true,
+                overlaying: 'y2',
+            },
+            yaxis2: {
+                title: 'Potentiometer',
+                titlefont: {color: 'rgb(148, 103, 189)'},
+                showgrid: false,
+                tickfont: {color: 'rgb(148, 103, 189)'},
+                side: 'right'
+            }
+        };
+
+        var data = [trace,trace3,trace2];
+
+        Plotly.newPlot('myDiv', data,layout);
 
     </script>
 
